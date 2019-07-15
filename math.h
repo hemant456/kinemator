@@ -26,6 +26,27 @@ namespace Kinemator {
 		Point2D stretch(const double margin) const {
 			return Point2D(x * margin, y * margin);
 		}
+
+		Point2D rotated(double radians) const // + ve if counterclock wise
+		{
+			return Point2D(x * cos(radians) - y * sin(radians),
+				y * cos(radians) + x * sin(radians));
+		}
+
+	};
+
+	struct Line {
+		Point2D p;
+		Point2D q;
+
+		Line(Point2D p_in, Point2D q_in) {
+			p = p_in;
+			q = q_in;
+		}
+
+		Point2D project(const Point2D& toProject) const;
+
+		bool intersectionPoint(const Line& another, Point2D& isecPoint) const;
 	};
 
 	struct Rect {
@@ -76,13 +97,14 @@ namespace Kinemator {
 		std::vector<double> bandsTravel;
 	};
 
-	double distance_between_points(const Point2D& a, const Point2D& b) {
+	inline double distance_between_points(const Point2D& a, const Point2D& b) {
 		return sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
 	}
 
-	bool onsegment(const Point2D& a, const Point2D& b, const Point2D& c) {
-		return ((a.x <= b.x && b.x <= c.x) || (a.x >= b.x && b.x >= c.x)) && ((a.y <= b.y && b.y <= c.y) || (a.y >= b.y && b.y >= c.y));
-	}
+	// Given three colinear points p, q, r, the function checks if
+	// point q lies on line segment 'pr'
+	bool onSegment(const Point2D& p, const Point2D& q, const Point2D& r);
+
 	double travelOnCenterLine(const Point2D& point, const RoadSegment& road);
 
 };

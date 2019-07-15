@@ -1,5 +1,6 @@
 #include "ImagePlaner.h"
 #include "math.h"
+#include <math>
 
 namespace Kinemator {
 
@@ -14,6 +15,23 @@ namespace Kinemator {
 		return object;
 	}
 
+	Point2D IntersectPixelBoundary(std::vector<PixelCoord> boundary, Line perpStick) {
+
+		for (int i = 1; i < boundary.size(); i++) {
+			Point2D iSecPt;
+			Point2D a(boundary[i - 1].x, boundary[i - 1].y);
+			Point2D b(boundary[i].x, boundary[i].y);
+			if (perpStick.intersectionPoint(Line(a, b), iSecPt)) {
+				return iSecPt;
+			}
+		}
+
+		assert(false);
+		Point2D pt;
+		return pt;
+	}
+
+
 	// Assuming no 'Z', convert pixel road segment to 2d road segment
 	RoadSegment pixelTo2DRoadSegment(std::vector<PixelCoord> leftBoundary, std::vector<PixelCoord> rightBoundary,
 		std::vector<PixelCoord> basisLine, double basisLength) {
@@ -23,9 +41,9 @@ namespace Kinemator {
 		for (int i = 0; i <= basisLine.size(); i++) {
 			PixelCoord basisLinePt = basisLine[i];
 			Point2D vec(basisLinePt.x, basisLinePt.y);
-			vec.rotate(M_PI / 2);
+			vec.rotated(-M_PI / 2);
 			Point2D leftExtremePt = vec.stretch(1000);
-			Point2D rightExtremePt = leftExtremePt.rotate(M_PI);
+			Point2D rightExtremePt = leftExtremePt.rotated(M_PI);
 			Point2D leftRoadPt = IntersectPixelBoundary(leftBoundary, Line(leftExtremePt, rightExtremePt));
 			Point2D rightRoadPt = IntersectPixelBoundary(rightBoundary, Line(leftExtremePt, rightExtremePt));
 
